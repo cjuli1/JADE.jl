@@ -490,6 +490,7 @@ end
 #---------------------------------------------------
 # Get terminal water value
 #---------------------------------------------------
+# TODO: Read reservoir sp from file, or improve hasdownstream to find best string (not all downstream stations) and handle pumps and pumped storages
 function set_reservoir_sp!(
     reservoirs::Dict{Symbol,Reservoir},
     hydros::Dict{Symbol,HydroStation},
