@@ -29,6 +29,7 @@ end
     hasdownstream(
         sets::Sets,
         station_arcs::Dict{NTuple{2,Symbol},StationArc},
+        hydros::Dict{Symbol,HydroStation},
     )
 
 This function is used to determine which hydro stations are present downstream
@@ -37,14 +38,19 @@ from all reservoirs.
 ### Inputs
   sets                      A JADE set structure. Should include all arcs and nodes.
   station_arcs              A dictionary we will use to get the station name from a station arc.
+    hydros                    A dictionary containing hydro station data.
 
 ### Returns
   reservoir_has_downstream  A dictionary indexed by reservoirs that stores a
                             list of hydro stations that each reservoir has
                             between itself and the sea.
 """
-function hasdownstream(sets::Sets, station_arcs::Dict{NTuple{2,Symbol},StationArc})
-    reverseflow = Symbol[]
+function hasdownstream(
+    sets::Sets,
+    station_arcs::Dict{NTuple{2,Symbol},StationArc},
+    hydros::Dict{Symbol,HydroStation},
+)
+    reverseflow = [station for (station, hydro) in hydros if hydro.sp < 0]
     @assert !isempty(sets.RESERVOIRS)
     @assert !isempty(sets.STATION_ARCS)
 

@@ -107,7 +107,7 @@ function JADEsddp(d::JADEData, optimizer = nothing)
             md,
             begin
                 # Dispatch of energy in MW from hydro stations
-                hydro_disp[s.HYDROS, s.BLOCKS] >= 0
+                hydro_disp[s.HYDROS, s.BLOCKS]
                 # Amount of thermal energy used, in MW
                 thermal_use[s.THERMALS, s.BLOCKS] >= 0
                 # Transmission flows between nodes in MW
@@ -277,11 +277,22 @@ function JADEsddp(d::JADEData, optimizer = nothing)
                 # Capacity constraints
 
                 # Hydro plant capacities
-                useHydro[m in s.HYDROS, bl in s.BLOCKS],
+                useHydroUpper[m in s.HYDROS, bl in s.BLOCKS; d.hydro_stations[m].sp >= 0],
                 hydro_disp[m, bl] <=
                 d.hydro_stations[m].capacity - sum(
                     d.outage[timenow][(mm, bb)] for
                     (mm, bb) in keys(d.outage[timenow]) if (mm, bb) == (m, bl)
+                )
+                useHydroLower[m in s.HYDROS, bl in s.BLOCKS; d.hydro_stations[m].sp >= 0],
+                hydro_disp[m, bl] >= 0
+                usePumpUpper[m in s.HYDROS, bl in s.BLOCKS; d.hydro_stations[m].sp < 0],
+                hydro_disp[m, bl] <= 0
+                usePumpLower[m in s.HYDROS, bl in s.BLOCKS; d.hydro_stations[m].sp < 0],
+                hydro_disp[m, bl] >= -(
+                    d.hydro_stations[m].capacity - sum(
+                        d.outage[timenow][(mm, bb)] for
+                        (mm, bb) in keys(d.outage[timenow]) if (mm, bb) == (m, bl)
+                    )
                 )
 
                 # Thermal plant capacities

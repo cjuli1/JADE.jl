@@ -497,7 +497,7 @@ function set_reservoir_sp!(
     station_arcs::Dict{NTuple{2,Symbol},StationArc},
 )
     # Compute which hydro stations are downstream from each reservoir
-    reservoir_has_downstream = hasdownstream(sets, station_arcs)
+    reservoir_has_downstream = hasdownstream(sets, station_arcs, hydros)
 
     # Update the specific power of each reservoir:
     #   conversion factor for m^3 -> MWh
